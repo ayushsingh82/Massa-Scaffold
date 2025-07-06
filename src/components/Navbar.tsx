@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ConnectWallet } from './ConnectWallet';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -38,13 +37,13 @@ export default function Navbar() {
               Counter
             </Link>
             <Link 
-              href="#features" 
+              href="" 
               className="text-white hover:text-orange-400 transition-colors"
             >
               Features
             </Link>
             <Link 
-              href="#about" 
+              href="" 
               className="text-white hover:text-orange-400 transition-colors"
             >
               About
@@ -53,7 +52,9 @@ export default function Navbar() {
 
           {/* Wallet Connect Button */}
           <div className="hidden md:flex items-center">
-            <ConnectWallet />
+            <button className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 font-medium">
+              Connect Wallet
+            </button>
           </div>
 
           {/* Mobile menu button */}
@@ -106,7 +107,9 @@ export default function Navbar() {
                 About
               </Link>
               <div className="px-3 py-2">
-                <ConnectWallet />
+                <button className="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-2 rounded-lg hover:from-orange-600 hover:to-orange-700 transition-all duration-200 font-medium">
+                  Connect Wallet
+                </button>
               </div>
             </div>
           </div>

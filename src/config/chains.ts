@@ -1,7 +1,4 @@
 import { defineChain } from 'viem';
-import { createConfig, configureChains } from 'wagmi';
-import { publicProvider } from 'wagmi/providers/public';
-import {  massaTestnet } from 'viem/chains';
 
 // Massa Mainnet
 export const massaMainnet = defineChain({
