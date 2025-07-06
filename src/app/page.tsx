@@ -32,11 +32,17 @@ export default function Home() {
               >
                 Try Demo
               </Link>
+              <Link
+                href="/wallet"
+                className="border-2 border-orange-500 text-orange-400 px-8 py-4 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-200 font-semibold text-lg"
+              >
+                Wallet Demo
+              </Link>
               <a
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border-2 border-orange-500 text-orange-400 px-8 py-4 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-200 font-semibold text-lg"
+                className="border-2 border-gray-600 text-gray-300 px-8 py-4 rounded-lg hover:bg-gray-800 transition-all duration-200 font-semibold text-lg"
               >
                 View on GitHub
               </a>
@@ -75,7 +81,7 @@ export default function Home() {
                 Wallet Integration
               </h3>
               <p className="text-gray-300">
-                Seamless integration with Massa wallet provider and popular wallet solutions for easy user onboarding.
+                Seamless integration with Bearby wallet for easy user onboarding and account management.
               </p>
             </div>
 
@@ -181,11 +187,17 @@ export default function Home() {
                 >
                   Explore Demo
                 </Link>
+                <Link
+                  href="/wallet"
+                  className="border-2 border-orange-500 text-orange-400 px-6 py-3 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-200 font-semibold text-center"
+                >
+                  Wallet Demo
+                </Link>
                 <a
                   href="https://docs.massa.net"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border-2 border-orange-500 text-orange-400 px-6 py-3 rounded-lg hover:bg-orange-500 hover:text-white transition-all duration-200 font-semibold text-center"
+                  className="border-2 border-gray-600 text-gray-300 px-6 py-3 rounded-lg hover:bg-gray-800 transition-all duration-200 font-semibold text-center"
                 >
                   Learn More
                 </a>
@@ -230,6 +242,12 @@ export default function Home() {
             >
               Get Started
             </a>
+            <Link
+              href="/wallet"
+              className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-orange-600 transition-all duration-200 font-semibold text-lg"
+            >
+              Wallet Demo
+            </Link>
             <Link
               href="/counter"
               className="border-2 border-white text-white px-8 py-4 rounded-lg hover:bg-white hover:text-orange-600 transition-all duration-200 font-semibold text-lg"
