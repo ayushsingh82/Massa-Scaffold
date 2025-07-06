@@ -11,7 +11,8 @@ assembly/utils/
 ├── counter-example.ts          # Args serialization with counter contract
 ├── constructor-example.ts      # Constructor implementation with parameters
 ├── mas-token-example.ts        # MAS token interactions
-└── serializable-example.ts     # Generic Serializable types
+├── serializable-example.ts     # Generic Serializable types
+└── config-usage-example.ts     # Configuration usage examples
 ```
 
 ## 🚀 Quick Start
@@ -36,7 +37,13 @@ assembly/utils/
    echo "MASSA_PRIVATE_KEY=your_private_key_here" > .env
    ```
 
-3. **Compile Smart Contracts**
+3. **Configuration Setup**
+   ```bash
+   # The config.ts file is already configured with buildnet settings
+   # You can modify network settings, contract addresses, and other configurations
+   ```
+
+4. **Compile Smart Contracts**
    ```bash
    # Build AssemblyScript contracts
    npm run build
@@ -162,9 +169,86 @@ const order = new Order("O1", "Alice", [product1, product2], 0, "pending");
 const createdOrder = await client.createOrder(order);
 ```
 
-## 🔧 Development Patterns
+### 5. Configuration Example (`config-usage-example.ts`)
 
-### Args Serialization Pattern
+**Purpose**: Demonstrates how to use the centralized configuration system.
+
+**Key Concepts**:
+- Network configuration management
+- Environment variable validation
+- Contract deployment settings
+- Wallet connection configuration
+
+**Features**:
+- Buildnet, testnet, and mainnet configurations
+- Automatic explorer URL generation
+- Development mode utilities
+- Contract address management
+
+**Usage**:
+```typescript
+import { CONFIG_UTILS, CONTRACT_CONFIG } from '../config';
+
+// Get current network (buildnet by default)
+const network = CONFIG_UTILS.getCurrentNetwork();
+
+// Deploy contract with configuration
+const contract = await deployContract(byteCode, args);
+
+// Get explorer URL for transaction
+const explorerUrl = CONFIG_UTILS.getExplorerUrl(txHash);
+```
+
+## ⚙️ Configuration
+
+### Network Configuration
+
+The project includes a centralized configuration system in `config.ts`:
+
+```typescript
+// Buildnet configuration (default)
+buildnet: {
+  name: 'Massa Buildnet',
+  rpcUrl: 'https://buildnet.massa.net/api/v2',
+  explorerUrl: 'https://buildnet-explorer.massa.net',
+  chainId: 'buildnet',
+  currency: {
+    name: 'Massa',
+    symbol: 'MAS',
+    decimals: 9,
+  },
+}
+```
+
+### Environment Variables
+
+Required environment variables:
+```bash
+MASSA_PRIVATE_KEY=your_private_key_here
+```
+
+Optional environment variables:
+```bash
+MASSA_NETWORK=buildnet  # buildnet, testnet, or mainnet
+MASSA_CONTRACT_ADDRESS=your_contract_address
+```
+
+### Configuration Usage
+
+```typescript
+import { CONFIG_UTILS, CONTRACT_CONFIG } from './config';
+
+// Get current network
+const network = CONFIG_UTILS.getCurrentNetwork();
+
+// Get contract address
+const contractAddress = CONFIG_UTILS.getContractAddress('counter');
+
+// Get explorer URL
+const explorerUrl = CONFIG_UTILS.getExplorerUrl(txHash);
+```
+
+## 🔧 Development Patterns
 
 **Client Side (TypeScript)**:
 ```typescript
