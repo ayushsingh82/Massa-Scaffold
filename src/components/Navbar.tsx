@@ -37,9 +37,9 @@ export default function Navbar() {
     if (typeof window === 'undefined') return null;
     
     return window.bearby || 
-           (window as any).ethereum || 
-           (window as any).bearbyWallet ||
-           (window as any).massaWallet;
+           (window as unknown as Record<string, unknown>).ethereum || 
+           (window as unknown as Record<string, unknown>).bearbyWallet ||
+           (window as unknown as Record<string, unknown>).massaWallet;
   };
 
   // Check connection status on mount
@@ -49,13 +49,14 @@ export default function Navbar() {
       if (wallet) {
         try {
           // Try different methods to get accounts
-          let accounts;
-          if (wallet.request) {
-            accounts = await wallet.request({ method: 'eth_accounts' });
-          } else if (wallet.getAccounts) {
-            accounts = await wallet.getAccounts();
-          } else if (wallet.accounts) {
-            accounts = wallet.accounts;
+          let accounts: string[] | undefined;
+          if (wallet && typeof wallet === 'object' && 'request' in wallet) {
+            const result = await (wallet as { request: (args: { method: string }) => Promise<unknown> }).request({ method: 'eth_accounts' });
+            accounts = result as string[];
+          } else if (wallet && typeof wallet === 'object' && 'getAccounts' in wallet) {
+            accounts = await (wallet as { getAccounts: () => Promise<string[]> }).getAccounts();
+          } else if (wallet && typeof wallet === 'object' && 'accounts' in wallet) {
+            accounts = (wallet as { accounts: string[] }).accounts;
           }
           
           if (accounts && accounts.length > 0) {
@@ -85,9 +86,9 @@ export default function Navbar() {
         setError('Bearby wallet not found. Please ensure the Bearby extension is installed and enabled.');
         console.log('Available wallet objects:', {
           windowBearby: !!window.bearby,
-          ethereum: !!(window as any).ethereum,
-          bearbyWallet: !!(window as any).bearbyWallet,
-          massaWallet: !!(window as any).massaWallet
+          ethereum: !!(window as unknown as Record<string, unknown>).ethereum,
+          bearbyWallet: !!(window as unknown as Record<string, unknown>).bearbyWallet,
+          massaWallet: !!(window as unknown as Record<string, unknown>).massaWallet
         });
         return;
       }
@@ -95,22 +96,23 @@ export default function Navbar() {
       console.log('Attempting to connect to wallet:', wallet);
 
       // Try different connection methods
-      let accounts;
-      if (wallet.request) {
-        accounts = await wallet.request({ method: 'eth_requestAccounts' });
-      } else if (wallet.connect) {
-        await wallet.connect();
-        if (wallet.getAccounts) {
-          accounts = await wallet.getAccounts();
-        } else if (wallet.accounts) {
-          accounts = wallet.accounts;
+      let accounts: string[] | undefined;
+      if (wallet && typeof wallet === 'object' && 'request' in wallet) {
+        const result = await (wallet as { request: (args: { method: string }) => Promise<unknown> }).request({ method: 'eth_requestAccounts' });
+        accounts = result as string[];
+      } else if (wallet && typeof wallet === 'object' && 'connect' in wallet) {
+        await (wallet as { connect: () => Promise<void> }).connect();
+        if (wallet && typeof wallet === 'object' && 'getAccounts' in wallet) {
+          accounts = await (wallet as { getAccounts: () => Promise<string[]> }).getAccounts();
+        } else if (wallet && typeof wallet === 'object' && 'accounts' in wallet) {
+          accounts = (wallet as { accounts: string[] }).accounts;
         }
-      } else if (wallet.enable) {
-        await wallet.enable();
-        if (wallet.getAccounts) {
-          accounts = await wallet.getAccounts();
-        } else if (wallet.accounts) {
-          accounts = wallet.accounts;
+      } else if (wallet && typeof wallet === 'object' && 'enable' in wallet) {
+        await (wallet as { enable: () => Promise<void> }).enable();
+        if (wallet && typeof wallet === 'object' && 'getAccounts' in wallet) {
+          accounts = await (wallet as { getAccounts: () => Promise<string[]> }).getAccounts();
+        } else if (wallet && typeof wallet === 'object' && 'accounts' in wallet) {
+          accounts = (wallet as { accounts: string[] }).accounts;
         }
       }
       
@@ -121,11 +123,11 @@ export default function Navbar() {
       } else {
         setError('No accounts found in Bearby wallet.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to connect to Bearby wallet:', error);
-      if (error.code === 4001) {
+      if (error && typeof error === 'object' && 'code' in error && error.code === 4001) {
         setError('Connection rejected by user.');
-      } else if (error.message) {
+      } else if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
         setError(`Connection failed: ${error.message}`);
       } else {
         setError('Failed to connect to Bearby wallet. Please try again.');
@@ -272,18 +274,18 @@ export default function Navbar() {
                 Counter
               </Link>
               <Link 
-                href="" 
+                href="/bridge" 
                 className="block px-3 py-2 text-white hover:text-orange-400 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Features
+                Bridge
               </Link>
               <Link 
-                href="" 
+                href="/mnsdomain" 
                 className="block px-3 py-2 text-white hover:text-orange-400 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                About
+                MNS-Domain
               </Link>
               <div className="px-3 py-2">
                 <button 

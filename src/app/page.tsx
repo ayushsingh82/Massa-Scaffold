@@ -177,7 +177,7 @@ export default function Home() {
                 to build, test, and deploy your decentralized applications.
               </p>
               <p className="text-lg text-gray-300 mb-8">
-                Whether you're a seasoned blockchain developer or just getting started, this starter kit 
+                Whether you&apos;re a seasoned blockchain developer or just getting started, this starter kit 
                 will help you focus on building your application logic rather than setting up infrastructure.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
