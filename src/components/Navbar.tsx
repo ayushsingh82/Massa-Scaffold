@@ -193,16 +193,16 @@ export default function Navbar() {
               Counter
             </Link>
             <Link 
-              href="" 
+              href="/bridge" 
               className="text-white hover:text-orange-400 transition-colors"
             >
-              Features
+              Bridge
             </Link>
             <Link 
-              href="" 
+              href="/mnsdomain" 
               className="text-white hover:text-orange-400 transition-colors"
             >
-              About
+              MNS-Domain
             </Link>
           </div>
 
