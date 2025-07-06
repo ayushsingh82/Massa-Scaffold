@@ -10,27 +10,7 @@ export default function Navbar() {
   const [walletAddress, setWalletAddress] = useState('');
   const [error, setError] = useState('');
 
-  // Check if Bearby wallet is available
-  const checkBearbyWallet = () => {
-    if (typeof window === 'undefined') return false;
-    
-    // Check multiple possible ways Bearby might be available
-    const bearby = window.bearby || 
-                   (window as any).ethereum?.isBearby || 
-                   (window as any).bearbyWallet ||
-                   (window as any).massaWallet;
-    
-    console.log('Bearby detection check:', {
-      windowBearby: !!window.bearby,
-      ethereum: !!(window as any).ethereum,
-      ethereumIsBearby: !!(window as any).ethereum?.isBearby,
-      bearbyWallet: !!(window as any).bearbyWallet,
-      massaWallet: !!(window as any).massaWallet,
-      finalResult: !!bearby
-    });
-    
-    return !!bearby;
-  };
+
 
   // Get the Bearby wallet instance
   const getBearbyWallet = () => {
