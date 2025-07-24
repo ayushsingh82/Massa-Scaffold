@@ -12,7 +12,9 @@ assembly/utils/
 ├── constructor-example.ts      # Constructor implementation with parameters
 ├── mas-token-example.ts        # MAS token interactions
 ├── serializable-example.ts     # Generic Serializable types
-└── config-usage-example.ts     # Configuration usage examples
+├── config-usage-example.ts     # Configuration usage examples
+├── bearby-wallet-example.ts    # Bearby wallet integration
+└── bearby-integration-example.ts # Bearby integration with @hicaru/bearby.js
 ```
 
 ## 🚀 Quick Start
@@ -197,6 +199,64 @@ const contract = await deployContract(byteCode, args);
 
 // Get explorer URL for transaction
 const explorerUrl = CONFIG_UTILS.getExplorerUrl(txHash);
+```
+
+### 6. Bearby Wallet Example (`bearby-wallet-example.ts`)
+
+**Purpose**: Demonstrates proper Bearby wallet integration without hardcoded addresses.
+
+**Key Concepts**:
+- Real wallet connection (no hardcoded addresses)
+- Event listener management
+- Error handling for wallet operations
+- Transaction and message signing
+
+**Features**:
+- React hook for wallet integration
+- Automatic connection detection
+- Account change monitoring
+- Balance checking and transaction sending
+
+**Usage**:
+```typescript
+import { useBearbyWallet } from './bearby-wallet-example';
+
+const { isConnected, walletAddress, connect, disconnect } = useBearbyWallet();
+
+// Connect to Bearby wallet
+await connect();
+
+// Get real wallet address (not hardcoded)
+console.log('Connected address:', walletAddress);
+```
+
+### 7. Bearby Integration Example (`bearby-integration-example.ts`)
+
+**Purpose**: Demonstrates proper Bearby integration using the `@hicaru/bearby.js` package.
+
+**Key Concepts**:
+- Using the correct Bearby package (`@hicaru/bearby.js`)
+- Wallet connection and management
+- Contract interaction with Bearby
+- Parameter formatting for contract calls
+
+**Features**:
+- BearbyWalletManager class for wallet operations
+- React hook for Bearby integration
+- BearbyContractManager for contract interactions
+- Utility functions for address formatting and MAS conversion
+
+**Usage**:
+```typescript
+import { BearbyWalletManager, BearbyContractManager } from './bearby-integration-example';
+
+// Initialize wallet manager
+const walletManager = new BearbyWalletManager();
+const address = await walletManager.connectWallet();
+
+// Initialize contract manager
+const contractManager = new BearbyContractManager('CONTRACT_ADDRESS');
+const result = await contractManager.callContract('functionName', [param1, param2]);
 ```
 
 ## ⚙️ Configuration

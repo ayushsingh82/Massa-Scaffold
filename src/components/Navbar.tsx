@@ -3,107 +3,101 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+// Import Bearby Web3 - using dynamic import to avoid build issues
+let web3: any = null;
+
+// Dynamic import to handle potential build issues
+if (typeof window !== 'undefined') {
+  import('@hicaru/bearby.js').then((module) => {
+    web3 = module.web3;
+  }).catch((error) => {
+    console.error('Failed to load Bearby Web3:', error);
+  });
+}
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [isConnecting, setIsConnecting] = useState(false);
   const [walletAddress, setWalletAddress] = useState('');
   const [error, setError] = useState('');
+  const [wallet, setWallet] = useState<any>(null);
+  const [accounts, setAccounts] = useState<any[]>([]);
 
-
-
-  // Get the Bearby wallet instance
-  const getBearbyWallet = () => {
-    if (typeof window === 'undefined') return null;
-    
-    return window.bearby || 
-           (window as unknown as Record<string, unknown>).ethereum || 
-           (window as unknown as Record<string, unknown>).bearbyWallet ||
-           (window as unknown as Record<string, unknown>).massaWallet;
-  };
-
-  // Check connection status on mount
+  // Initialize wallet on component mount
   useEffect(() => {
-    const checkConnection = async () => {
-      const wallet = getBearbyWallet();
-      if (wallet) {
-        try {
-          // Try different methods to get accounts
-          let accounts: string[] | undefined;
-          if (wallet && typeof wallet === 'object' && 'request' in wallet) {
-            const result = await (wallet as { request: (args: { method: string }) => Promise<unknown> }).request({ method: 'eth_accounts' });
-            accounts = result as string[];
-          } else if (wallet && typeof wallet === 'object' && 'getAccounts' in wallet) {
-            accounts = await (wallet as { getAccounts: () => Promise<string[]> }).getAccounts();
-          } else if (wallet && typeof wallet === 'object' && 'accounts' in wallet) {
-            accounts = (wallet as { accounts: string[] }).accounts;
+    const initializeWallet = async () => {
+      try {
+        // Wait for Bearby Web3 to load
+        if (!web3) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          if (!web3) {
+            setError('Bearby Web3 not available. Please refresh the page.');
+            return;
           }
-          
-          if (accounts && accounts.length > 0) {
-            setIsConnected(true);
-            setWalletAddress(accounts[0]);
-            console.log('Found existing connection:', accounts[0]);
-          }
-        } catch (error) {
-          console.log('No active connection found:', error);
         }
+
+        // Check if Bearby is installed
+        if (!web3.wallet.installed) {
+          setError('Bearby wallet is not installed. Please install the Bearby extension from the Chrome Web Store.');
+          return;
+        }
+
+        console.log('Bearby wallet is installed');
+
+        // Check if already connected
+        if (web3.wallet.connected && web3.wallet.account?.base58) {
+          setIsConnected(true);
+          setWalletAddress(web3.wallet.account.base58);
+          console.log('Found existing connection:', web3.wallet.account.base58);
+        }
+
+        // Set up wallet instance for later use
+        setWallet(web3.wallet);
+
+      } catch (error) {
+        console.error('Failed to initialize Bearby wallet:', error);
+        setError('Failed to initialize Bearby wallet. Please ensure Bearby extension is installed.');
       }
     };
 
-    // Delay the check to ensure extensions are loaded
-    const timer = setTimeout(checkConnection, 1000);
+    // Delay initialization to ensure extensions are loaded
+    const timer = setTimeout(initializeWallet, 1000);
     return () => clearTimeout(timer);
   }, []);
 
-  // Connect to Bearby wallet
+  // Connect to wallet
   const connectWallet = async () => {
+    if (!web3 || !web3.wallet) {
+      setError('Bearby Web3 not available. Please refresh the page.');
+      return;
+    }
+
     try {
       setIsConnecting(true);
       setError('');
 
-      const wallet = getBearbyWallet();
-      if (!wallet) {
-        setError('Bearby wallet not found. Please ensure the Bearby extension is installed and enabled.');
-        console.log('Available wallet objects:', {
-          windowBearby: !!window.bearby,
-          ethereum: !!(window as unknown as Record<string, unknown>).ethereum,
-          bearbyWallet: !!(window as unknown as Record<string, unknown>).bearbyWallet,
-          massaWallet: !!(window as unknown as Record<string, unknown>).massaWallet
-        });
+      // Check if Bearby is installed
+      if (!web3.wallet.installed) {
+        setError('Bearby wallet is not installed. Please install the Bearby extension from the Chrome Web Store.');
         return;
       }
 
-      console.log('Attempting to connect to wallet:', wallet);
-
-      // Try different connection methods
-      let accounts: string[] | undefined;
-      if (wallet && typeof wallet === 'object' && 'request' in wallet) {
-        const result = await (wallet as { request: (args: { method: string }) => Promise<unknown> }).request({ method: 'eth_requestAccounts' });
-        accounts = result as string[];
-      } else if (wallet && typeof wallet === 'object' && 'connect' in wallet) {
-        await (wallet as { connect: () => Promise<void> }).connect();
-        if (wallet && typeof wallet === 'object' && 'getAccounts' in wallet) {
-          accounts = await (wallet as { getAccounts: () => Promise<string[]> }).getAccounts();
-        } else if (wallet && typeof wallet === 'object' && 'accounts' in wallet) {
-          accounts = (wallet as { accounts: string[] }).accounts;
-        }
-      } else if (wallet && typeof wallet === 'object' && 'enable' in wallet) {
-        await (wallet as { enable: () => Promise<void> }).enable();
-        if (wallet && typeof wallet === 'object' && 'getAccounts' in wallet) {
-          accounts = await (wallet as { getAccounts: () => Promise<string[]> }).getAccounts();
-        } else if (wallet && typeof wallet === 'object' && 'accounts' in wallet) {
-          accounts = (wallet as { accounts: string[] }).accounts;
-        }
-      }
+      console.log('Attempting wallet connection...');
       
-      if (accounts && accounts.length > 0) {
+      // Connect to Bearby wallet
+      const connected = await web3.wallet.connect();
+      console.log('Connection result:', connected);
+      
+      if (connected && web3.wallet.account?.base58) {
+        const address = web3.wallet.account.base58;
         setIsConnected(true);
-        setWalletAddress(accounts[0]);
-        console.log('Connected to Bearby wallet:', accounts[0]);
+        setWalletAddress(address);
+        console.log('Connected to Bearby wallet:', address);
       } else {
-        setError('No accounts found in Bearby wallet.');
+        setError('Failed to connect to Bearby wallet or no account available.');
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Failed to connect to Bearby wallet:', error);
       if (error && typeof error === 'object' && 'code' in error && error.code === 4001) {
         setError('Connection rejected by user.');
@@ -117,11 +111,15 @@ export default function Navbar() {
     }
   };
 
-  // Disconnect from Bearby wallet
+  // Disconnect from wallet
   const disconnectWallet = async () => {
     try {
+      if (web3 && web3.wallet) {
+        await web3.wallet.disconnect();
+      }
       setIsConnected(false);
       setWalletAddress('');
+      setAccounts([]);
       setError('');
       console.log('Disconnected from Bearby wallet');
     } catch (error) {
@@ -213,7 +211,7 @@ export default function Navbar() {
                   {getShortAddress(walletAddress)}
                 </span>
               ) : (
-                'Connect Wallet'
+                'Connect Bearby'
               )}
             </button>
           </div>
@@ -222,9 +220,9 @@ export default function Navbar() {
           <div className="md:hidden">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-white hover:text-orange-400 focus:outline-none"
+              className="text-white hover:text-orange-400 transition-colors"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {isMenuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -235,10 +233,10 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile menu */}
         {isMenuOpen && (
           <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-black border-t border-orange-500/20">
+            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-black/95 border-t border-orange-500/20">
               <Link 
                 href="/" 
                 className="block px-3 py-2 text-white hover:text-orange-400 transition-colors"
@@ -267,6 +265,7 @@ export default function Navbar() {
               >
                 MNS-Domain
               </Link>
+              
               <div className="px-3 py-2">
                 <button 
                   onClick={() => {
@@ -293,9 +292,9 @@ export default function Navbar() {
                       <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
                       {getShortAddress(walletAddress)}
                     </span>
-                  ) : (
-                    'Connect Wallet'
-                  )}
+                                      ) : (
+                      'Connect Bearby'
+                    )}
                 </button>
               </div>
             </div>
