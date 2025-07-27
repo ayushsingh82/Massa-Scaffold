@@ -161,10 +161,10 @@ export default function Navbar() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             <Link 
-              href="/" 
+              href="/greeter" 
               className="text-white hover:text-orange-400 transition-colors"
             >
-              Home
+              Greeter
             </Link>
             <Link 
               href="/counter" 
@@ -238,11 +238,11 @@ export default function Navbar() {
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-black/95 border-t border-orange-500/20">
               <Link 
-                href="/" 
+                href="/greeter" 
                 className="block px-3 py-2 text-white hover:text-orange-400 transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
-                Home
+                Greeter
               </Link>
               <Link 
                 href="/counter" 
