@@ -14,7 +14,8 @@ assembly/utils/
 ├── serializable-example.ts     # Generic Serializable types
 ├── config-usage-example.ts     # Configuration usage examples
 ├── bearby-wallet-example.ts    # Bearby wallet integration
-└── bearby-integration-example.ts # Bearby integration with @hicaru/bearby.js
+├── bearby-integration-example.ts # Bearby integration with @hicaru/bearby.js
+└── greeter-contract-example.ts # Greeter smart contract with setter/getter
 ```
 
 ## 🚀 Quick Start
@@ -257,6 +258,43 @@ const address = await walletManager.connectWallet();
 // Initialize contract manager
 const contractManager = new BearbyContractManager('CONTRACT_ADDRESS');
 const result = await contractManager.callContract('functionName', [param1, param2]);
+```
+
+### 8. Greeter Contract Example (`greeter-contract-example.ts`)
+
+**Purpose**: Demonstrates a simple greeter smart contract with setter and getter functions.
+
+**Key Concepts**:
+- Smart contract with state management
+- Owner-based access control
+- Setter and getter functions
+- Contract initialization and ownership transfer
+
+**Features**:
+- AssemblyScript smart contract code (commented)
+- TypeScript client for contract interaction
+- React hook for easy integration
+- Mock data for development
+
+**Smart Contract Functions**:
+- `init()` - Initialize contract and set owner
+- `setGreeting(args)` - Set new greeting (owner only)
+- `getGreeting()` - Get current greeting
+- `getOwner()` - Get contract owner
+- `transferOwnership(args)` - Transfer ownership (owner only)
+- `getContractInfo()` - Get complete contract information
+
+**Usage**:
+```typescript
+import { GreeterContractClient, useGreeterContract } from './greeter-contract-example';
+
+// Using the client class
+const client = new GreeterContractClient('CONTRACT_ADDRESS', web3);
+await client.setGreeting('Hello, World!');
+const greeting = await client.getGreeting();
+
+// Using the React hook
+const { greeting, setGreeting, getGreeting, isLoading } = useGreeterContract('CONTRACT_ADDRESS');
 ```
 
 ## ⚙️ Configuration
